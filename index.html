@@ -3,201 +3,223 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>A Conexão das Partículas</title>
+    <title>Contador para o Encontro Quântico</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            touch-action: manipulation; /* Melhora a responsividade ao toque */
+            background-color: #0c0a1a; /* Fundo do espaço profundo */
         }
-
-        /* Animação de pulso para as partículas */
+        .font-display {
+            font-family: 'Playfair Display', serif;
+        }
+        /* Animação de pulso para as estrelas */
         @keyframes pulse {
             0%, 100% {
                 transform: scale(1);
-                box-shadow: 0 0 20px 5px rgba(255, 201, 71, 0.4);
+                opacity: 0.8;
             }
             50% {
-                transform: scale(1.08);
-                box-shadow: 0 0 40px 15px rgba(255, 201, 71, 0.7);
+                transform: scale(1.1);
+                opacity: 1;
             }
         }
-        
-        @keyframes pulse2 {
-            0%, 100% {
-                transform: scale(1);
-                box-shadow: 0 0 20px 5px rgba(233, 69, 96, 0.4);
+        /* Animação para a união final */
+        @keyframes supernova {
+            0% {
+                transform: translate(-50%, -50%) scale(0);
+                opacity: 0.5;
             }
             50% {
-                transform: scale(1.08);
-                box-shadow: 0 0 40px 15px rgba(233, 69, 96, 0.7);
+                transform: translate(-50%, -50%) scale(2.5);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(2);
+                opacity: 0.8;
             }
         }
-
-        .particle1 {
-            animation: pulse 3s infinite ease-in-out;
+        .star-particle {
+            animation: pulse 4s ease-in-out infinite;
+            box-shadow: 0 0 20px 8px rgba(200, 200, 255, 0.6);
         }
-        
-        .particle2 {
-            animation: pulse2 3s infinite ease-in-out 0.5s; /* Delay para não pulsarem juntas */
+        .supernova {
+            animation: supernova 2s forwards, pulse 3s ease-in-out 2s infinite;
         }
-        
-        /* Fundo com gradiente animado e estrelas */
-        .cosmic-background {
-            background: linear-gradient(225deg, #1a1a2e, #16213e, #0f3460);
-            background-size: 400% 400%;
-            animation: gradientBG 15s ease infinite;
-            position: relative;
-            overflow: hidden;
-        }
-
-        @keyframes gradientBG {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-        
-        /* Estrelas para o fundo */
+        /* Estrelas de fundo */
         .star {
             position: absolute;
             background-color: white;
             border-radius: 50%;
-            animation: twinkle 5s infinite;
+            animation: twinkle 5s infinite ease-in-out;
         }
-
         @keyframes twinkle {
             0%, 100% { opacity: 0.5; }
             50% { opacity: 1; }
         }
     </style>
 </head>
-<body class="cosmic-background text-white overflow-hidden">
-    <div id="star-container"></div>
+<body class="bg-gradient-to-br from-[#0c0a1a] via-[#1a1a3a] to-[#3a2a5a] text-white overflow-hidden">
 
-    <main class="min-h-screen w-full flex flex-col items-center justify-center p-4 z-10 relative">
+    <!-- Container para as estrelas de fundo -->
+    <div id="star-background" class="absolute top-0 left-0 w-full h-full z-0"></div>
+
+    <main class="w-full h-screen flex flex-col justify-center items-center p-4 relative z-10">
         
-        <div class="text-center mb-8">
-            <h1 class="text-3xl md:text-4xl font-bold text-yellow-300 tracking-wider">A Contagem para a Conexão</h1>
-            <p class="text-gray-300 mt-2 text-sm md:text-base">Duas almas, um destino quântico.</p>
+        <!-- Container das Partículas/Estrelas -->
+        <div id="particle-container" class="w-full max-w-md h-16 mb-8 relative">
+            <!-- Estrela 1 (Esquerda) -->
+            <div id="particle1" class="star-particle w-5 h-5 bg-cyan-200 rounded-full absolute top-1/2 -translate-y-1/2 transition-all duration-1000 ease-linear" style="left: 10%;"></div>
+            
+            <!-- Estrela 2 (Direita) -->
+            <div id="particle2" class="star-particle w-5 h-5 bg-purple-300 rounded-full absolute top-1/2 -translate-y-1/2 transition-all duration-1000 ease-linear" style="right: 10%;"></div>
+            
+            <!-- A União (Supernova) -->
+            <div id="union" class="supernova hidden cursor-pointer w-8 h-8 bg-gradient-to-br from-cyan-300 to-purple-400 rounded-full absolute top-1/2 left-1/2" style="box-shadow: 0 0 40px 15px rgba(220, 200, 255, 0.7);"></div>
         </div>
 
-        <!-- Visualização das Partículas -->
-        <div class="relative w-full max-w-xs flex items-center justify-between mb-10 h-24">
-            <div class="particle1 w-16 h-16 bg-yellow-400 rounded-full"></div>
-            
-            <!-- Barra de Progresso da Conexão -->
-            <div class="absolute top-1/2 left-0 w-full h-1 bg-gray-700 rounded-full overflow-hidden" style="transform: translateY(-50%);">
-                <div id="progress-bar" class="h-full bg-gradient-to-r from-yellow-400 to-pink-500 transition-all duration-1000 ease-linear"></div>
-            </div>
-            
-            <div class="particle2 w-16 h-16 bg-pink-500 rounded-full"></div>
-        </div>
+        <!-- Mensagem Principal -->
+        <h1 id="main-title" class="font-display text-3xl md:text-4xl text-center text-purple-200 mb-4 opacity-90">No emaranhado do tempo...</h1>
+        <p id="date-info" class="text-sm text-purple-200/80 mb-10">25.08.2025 — 30.08.2025</p>
 
-        <!-- Contagem Regressiva -->
-        <div id="countdown-container" class="grid grid-cols-4 gap-3 md:gap-6 text-center w-full max-w-md mx-auto">
-            <div class="bg-white/10 p-4 rounded-xl backdrop-blur-sm">
-                <span id="days" class="text-4xl md:text-6xl font-bold text-yellow-300">0</span>
-                <span class="block text-xs md:text-sm text-gray-300 mt-1">Dias</span>
+        <!-- Contador -->
+        <div id="countdown-wrapper" class="flex space-x-3 md:space-x-6 text-center">
+            <div class="bg-white/5 backdrop-blur-sm p-4 rounded-lg w-20 md:w-28 border border-white/10">
+                <span id="days" class="text-4xl md:text-6xl font-bold">00</span>
+                <span class="block text-xs uppercase tracking-widest opacity-70">Dias</span>
             </div>
-            <div class="bg-white/10 p-4 rounded-xl backdrop-blur-sm">
-                <span id="hours" class="text-4xl md:text-6xl font-bold text-yellow-300">0</span>
-                <span class="block text-xs md:text-sm text-gray-300 mt-1">Horas</span>
+            <div class="bg-white/5 backdrop-blur-sm p-4 rounded-lg w-20 md:w-28 border border-white/10">
+                <span id="hours" class="text-4xl md:text-6xl font-bold">00</span>
+                <span class="block text-xs uppercase tracking-widest opacity-70">Horas</span>
             </div>
-            <div class="bg-white/10 p-4 rounded-xl backdrop-blur-sm">
-                <span id="minutes" class="text-4xl md:text-6xl font-bold text-yellow-300">0</span>
-                <span class="block text-xs md:text-sm text-gray-300 mt-1">Minutos</span>
+            <div class="bg-white/5 backdrop-blur-sm p-4 rounded-lg w-20 md:w-28 border border-white/10">
+                <span id="minutes" class="text-4xl md:text-6xl font-bold">00</span>
+                <span class="block text-xs uppercase tracking-widest opacity-70">Minutos</span>
             </div>
-            <div class="bg-white/10 p-4 rounded-xl backdrop-blur-sm">
-                <span id="seconds" class="text-4xl md:text-6xl font-bold text-yellow-300">0</span>
-                <span class="block text-xs md:text-sm text-gray-300 mt-1">Segundos</span>
+            <div class="bg-white/5 backdrop-blur-sm p-4 rounded-lg w-20 md:w-28 border border-white/10">
+                <span id="seconds" class="text-4xl md:text-6xl font-bold">00</span>
+                <span class="block text-xs uppercase tracking-widest opacity-70">Segundos</span>
             </div>
         </div>
         
-        <!-- Mensagem de Conexão -->
-        <div id="connection-message" class="hidden text-center mt-12">
-            <h2 class="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 via-pink-400 to-purple-400">Conectadas!</h2>
-            <p class="text-gray-200 mt-2">O entrelaçamento está completo. A distância já não importa.</p>
+        <!-- Mensagem Final (escondida inicialmente) -->
+        <div id="final-message" class="hidden text-center mt-12">
+             <h2 class="font-display text-4xl md:text-5xl text-purple-200">Sincronicidade.</h2>
+             <p class="text-purple-200/80 mt-2">O universo testemunhou a união.</p>
+             <!-- Easter Egg -->
+             <p id="easter-egg" class="text-purple-200/60 text-sm mt-8 opacity-0 transition-opacity duration-2000">Para Daiane</p>
         </div>
 
-        <footer class="absolute bottom-4 text-center text-gray-400 text-xs z-10">
-            <p>No vasto vácuo, a distância as separava. <br> Agora, contam os segundos para o momento em que suas realidades se tornarão uma só.</p>
-        </footer>
     </main>
 
     <script>
-        // --- Configuração das Datas ---
+        // --- CONFIGURAÇÃO DAS DATAS ---
         const startDate = new Date('2025-08-25T00:00:00').getTime();
         const targetDate = new Date('2025-08-30T00:00:00').getTime();
-        const totalDuration = targetDate - startDate;
 
-        // --- Elementos do DOM ---
+        // --- ELEMENTOS DO DOM ---
         const daysEl = document.getElementById('days');
         const hoursEl = document.getElementById('hours');
         const minutesEl = document.getElementById('minutes');
         const secondsEl = document.getElementById('seconds');
-        const progressBarEl = document.getElementById('progress-bar');
-        const countdownContainer = document.getElementById('countdown-container');
-        const connectionMessage = document.getElementById('connection-message');
-        const starContainer = document.getElementById('star-container');
-
-        // --- Função para adicionar um zero à esquerda ---
-        const formatTime = (time) => time < 10 ? `0${time}` : time;
-
-        // --- Função principal da Contagem ---
-        const countdown = () => {
-            const now = new Date().getTime();
-            const distance = targetDate - now;
-
-            if (distance < 0) {
-                clearInterval(interval);
-                countdownContainer.classList.add('hidden');
-                connectionMessage.classList.remove('hidden');
-                progressBarEl.style.width = '100%';
-                return;
-            }
-
-            // Cálculos de tempo
-            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-            // Atualiza o HTML
-            daysEl.innerHTML = formatTime(days);
-            hoursEl.innerHTML = formatTime(hours);
-            minutesEl.innerHTML = formatTime(minutes);
-            secondsEl.innerHTML = formatTime(seconds);
-            
-            // Atualiza a barra de progresso
-            const elapsedTime = now - startDate;
-            const progressPercentage = Math.min(100, (elapsedTime / totalDuration) * 100);
-            progressBarEl.style.width = `${progressPercentage}%`;
-        };
         
-        // --- Geração de Estrelas ---
-        const createStars = () => {
-            const numStars = 100;
-            for (let i = 0; i < numStars; i++) {
+        const particle1 = document.getElementById('particle1');
+        const particle2 = document.getElementById('particle2');
+        const unionEl = document.getElementById('union');
+        
+        const countdownWrapper = document.getElementById('countdown-wrapper');
+        const finalMessage = document.getElementById('final-message');
+        const mainTitle = document.getElementById('main-title');
+        const dateInfo = document.getElementById('date-info');
+        const easterEggEl = document.getElementById('easter-egg');
+
+        // --- GERADOR DE ESTRELAS DE FUNDO ---
+        function createStars() {
+            const container = document.getElementById('star-background');
+            const starCount = 100; // Número de estrelas
+            for (let i = 0; i < starCount; i++) {
                 const star = document.createElement('div');
                 star.classList.add('star');
-                const size = Math.random() * 3;
+                const size = Math.random() * 2 + 1; // Tamanho entre 1px e 3px
                 star.style.width = `${size}px`;
                 star.style.height = `${size}px`;
                 star.style.top = `${Math.random() * 100}%`;
                 star.style.left = `${Math.random() * 100}%`;
                 star.style.animationDelay = `${Math.random() * 5}s`;
-                star.style.animationDuration = `${(Math.random() * 3) + 2}s`;
-                starContainer.appendChild(star);
+                container.appendChild(star);
             }
-        };
-
-        // --- Inicia a aplicação ---
+        }
         createStars();
-        const interval = setInterval(countdown, 1000);
-        countdown(); // Chamada inicial para não esperar 1 segundo
+
+        // --- EVENT LISTENER PARA O EASTER EGG ---
+        unionEl.addEventListener('click', () => {
+            easterEggEl.style.opacity = '1';
+        });
+
+        // --- FUNÇÃO PRINCIPAL DO CONTADOR ---
+        const countdownInterval = setInterval(() => {
+            const now = new Date().getTime();
+            const distance = targetDate - now;
+
+            // --- LÓGICA DE EXIBIÇÃO ---
+            if (now < startDate) {
+                mainTitle.textContent = "O cosmos aguarda o alinhamento...";
+                countdownWrapper.classList.add('hidden');
+                return;
+            }
+
+            if (distance < 0) {
+                clearInterval(countdownInterval);
+                countdownWrapper.classList.add('hidden');
+                mainTitle.classList.add('hidden');
+                dateInfo.classList.add('hidden');
+                
+                // Animação final das estrelas se encontrando
+                particle1.style.left = '50%';
+                particle1.style.transform = 'translate(-50%, -50%)';
+                particle2.style.right = '50%';
+                particle2.style.transform = 'translate(50%, -50%)';
+
+                // Após a animação de movimento, esconde as estrelas e mostra a união
+                setTimeout(() => {
+                    particle1.style.opacity = '0';
+                    particle2.style.opacity = '0';
+                    unionEl.classList.remove('hidden');
+                    finalMessage.classList.remove('hidden');
+                }, 1000); // 1s para a animação de transição acontecer
+                return;
+            }
+
+            // --- CÁLCULOS DE TEMPO ---
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            // --- ATUALIZAÇÃO DO DISPLAY ---
+            daysEl.innerText = String(days).padStart(2, '0');
+            hoursEl.innerText = String(hours).padStart(2, '0');
+            minutesEl.innerText = String(minutes).padStart(2, '0');
+            secondsEl.innerText = String(seconds).padStart(2, '0');
+            
+            // --- ATUALIZAÇÃO DA ANIMAÇÃO DAS PARTÍCULAS ---
+            const totalDuration = targetDate - startDate;
+            const elapsed = now - startDate;
+            let progress = (elapsed / totalDuration);
+            
+            progress = Math.min(1, Math.max(0, progress));
+
+            const travelDistance = 40; // 50% (meio) - 10% (início)
+            const p1_position = 10 + (progress * travelDistance);
+            const p2_position = 10 + (progress * travelDistance);
+
+            particle1.style.left = `${p1_position}%`;
+            particle2.style.right = `${p2_position}%`;
+
+        }, 1000);
     </script>
 </body>
 </html>
